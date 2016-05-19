@@ -1,7 +1,7 @@
 {
   "name": "blear.core.transform",
-  "version": "1.0.1",
-  "description": "location querystring",
+  "version": "1.0.0",
+  "description": "DOM CSS3 过渡动画",
   "scripts": {
     "live": "browser-sync start --config bs-config.js",
     "test": "node ./node_modules/.bin/karma start karma.conf.js --single-run",
