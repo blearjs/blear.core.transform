@@ -1,6 +1,6 @@
 {
   "name": "blear.core.transform",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "DOM CSS3 过渡动画",
   "scripts": {
     "live": "browser-sync start --config bs-config.js",
@@ -45,6 +45,7 @@
     "blear.utils.time": "1.x",
     "blear.utils.easing": "1.x",
     "blear.utils.function": "1.x",
+    "blear.utils.string": "1.x",
     "blear.core.event": "1.x",
     "blear.core.attribute": "1.x"
   },

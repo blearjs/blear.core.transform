@@ -16,6 +16,7 @@ var array =      require('blear.utils.array');
 var time =       require('blear.utils.time');
 var easing =     require('blear.utils.easing');
 var fun =        require('blear.utils.function');
+var string =     require('blear.utils.string');
 var event =      require('blear.core.event');
 var attribute =  require('blear.core.attribute');
 
@@ -129,6 +130,9 @@ exports.transit = function (el, to, options, callback) {
     var timeid = setTimeout(transformEnd, options.duration + DELAY_TIME);
     var timingFunction = easing.timingFunction(options.easing);
     var cssKeys = object.keys(to);
+    cssKeys = array.map(cssKeys, function (cssKey) {
+        return string.separatorize(cssKey);
+    });
     var css = {
         transitionDuration: options.duration + 'ms',
         transitionTimingFunction: timingFunction,
