@@ -9,16 +9,16 @@
 'use strict';
 
 var compatible = require('blear.utils.compatible');
-var access =     require('blear.utils.access');
-var typeis =     require('blear.utils.typeis');
-var object =     require('blear.utils.object');
-var array =      require('blear.utils.array');
-var time =       require('blear.utils.time');
-var easing =     require('blear.utils.easing');
-var fun =        require('blear.utils.function');
-var string =     require('blear.utils.string');
-var event =      require('blear.core.event');
-var attribute =  require('blear.core.attribute');
+var access = require('blear.utils.access');
+var typeis = require('blear.utils.typeis');
+var object = require('blear.utils.object');
+var array = require('blear.utils.array');
+var time = require('blear.utils.time');
+var easing = require('blear.utils.easing');
+var fun = require('blear.utils.function');
+var string = require('blear.utils.string');
+var event = require('blear.core.event');
+var attribute = require('blear.core.attribute');
 
 var win = window;
 var TRANSITIONEND_EVENT = compatible.event('transitionend', win);
@@ -34,10 +34,15 @@ var defaults = exports.defaults = {
     easing: 'linear',
 
     /**
-     * 动画时间
+     * 动画时间，单位 ms
      * @type number
      */
     duration: 345,
+
+    /**
+     * 动画延迟时间，单位 ms
+     */
+    delay: 0,
 
     // =======================================
     // ========== 以下参数仅适用于帧动画 =========
@@ -127,7 +132,7 @@ exports.transit = function (el, to, options, callback) {
 
     event.once(el, TRANSITIONEND_EVENT, transformEnd);
 
-    var timeid = setTimeout(transformEnd, options.duration + DELAY_TIME);
+    var timeid = setTimeout(transformEnd, options.duration + options.delay + DELAY_TIME);
     var timingFunction = easing.timingFunction(options.easing);
     var cssKeys = object.keys(to);
     cssKeys = array.map(cssKeys, function (cssKey) {
@@ -136,7 +141,7 @@ exports.transit = function (el, to, options, callback) {
     var css = {
         transitionDuration: options.duration + 'ms',
         transitionTimingFunction: timingFunction,
-        transitionDelay: 0,
+        transitionDelay: options.delay + 'ms',
         transitionProperty: cssKeys.join(',')
     };
 
@@ -219,7 +224,7 @@ exports.frame = function (el, name, options, callback) {
     if (options.count === -1) {
         options.count = 'infinite';
     } else {
-        timeid = setTimeout(transformEnd, options.duration * options.count + DELAY_TIME);
+        timeid = setTimeout(transformEnd, options.duration * options.count + options.delay + DELAY_TIME);
     }
 
     var timingFunction = easing.timingFunction(options.easing);
@@ -227,7 +232,7 @@ exports.frame = function (el, name, options, callback) {
         animationName: name,
         animationDuration: options.duration + 'ms',
         animationTimingFunction: timingFunction,
-        animationDelay: 0,
+        animationDelay: options.delay + 'ms',
         animationIterationCount: options.count,
         animationDirection: options.direction,
         //animationPlayState: 'running',
