@@ -1,7 +1,7 @@
 /**
  * core/transform
  * @author ydr.me
- * @create 2016-04-19 15:49
+ * @created 2016-04-19 15:49
  */
 
 
@@ -29,7 +29,7 @@ var DELAY_TIME = 100;
 var defaults = exports.defaults = {
     /**
      * 动画缓冲类型
-     * @type string
+     * @type string|Array
      */
     easing: 'linear',
 
@@ -37,10 +37,11 @@ var defaults = exports.defaults = {
      * 动画时间，单位 ms
      * @type number
      */
-    duration: 345,
+    duration: 678,
 
     /**
      * 动画延迟时间，单位 ms
+     * @type number
      */
     delay: 0,
 
@@ -70,10 +71,16 @@ var defaults = exports.defaults = {
 
 /**
  * 过渡
- * @param el
- * @param to
- * @param options
- * @param callback
+ * @param el {HTMLElement} 过渡元素
+ * @param to {String} 过渡终点
+ * @param [options|Function] {Object} 配置
+ * @param [options.easing] {String|Array} 缓冲类型或贝塞尔曲线参数数组
+ * @param [options.duration=678] {Number} 过渡时间
+ * @param [options.delay=0] {Number} 延迟时间
+ * @param [options.count=1] {Number} 帧动画执行次数，-1为无限次
+ * @param [options.direction="normal"] {String} 帧动画执行方向，可选值：normal、alternate、reverse、alternate-reverse
+ * @param [options.fillMode="forwards"] {String} 帧动画填充模式，可选值：none/forwards/backwards/both
+ * @param [callback] {Function} 回调
  */
 exports.transit = function (el, to, options, callback) {
     var args = access.args(arguments);
@@ -158,10 +165,16 @@ exports.transit = function (el, to, options, callback) {
 
 /**
  * 帧动画
- * @param el
- * @param name
- * @param options
- * @param callback
+ * @param el {HTMLElement} 动画元素
+ * @param name {String} 帧动画名称
+ * @param [options|Function] {Object} 配置
+ * @param [options.easing] {String|Array} 缓冲类型或贝塞尔曲线参数数组
+ * @param [options.duration=678] {Number} 每一次执行时间
+ * @param [options.delay=0] {Number} 延迟执行时间
+ * @param [options.count=1] {Number} 帧动画执行次数，-1为无限次
+ * @param [options.direction="normal"] {String} 帧动画执行方向，可选值：normal、alternate、reverse、alternate-reverse
+ * @param [options.fillMode="forwards"] {String} 帧动画填充模式，可选值：none/forwards/backwards/both
+ * @param [callback] {Function} 回调
  */
 exports.frame = function (el, name, options, callback) {
     var args = access.args(arguments);
@@ -197,23 +210,13 @@ exports.frame = function (el, name, options, callback) {
         clearTimeout(timeid);
         event.un(el, ANIMATIONEND_EVENT, transformEnd);
 
-        var css = {
-            animationName: '',
-            animationDuration: '',
-            animationTimingFunction: '',
-            animationDelay: '',
-            animationIterationCount: '',
-            animationDirection: '',
-            animationPlayState: '',
-            animationFillMode: ''
-        };
+        // 3. 暂停到帧动画的终点
+        attribute.style(el, {
+            animationPlayState: 'paused'
+        });
 
         // 4. 下一帧再回调
-        time.nextFrame(function () {
-            // 3. 清除帧动画样式
-            attribute.style(el, css);
-            callback();
-        });
+        time.nextFrame(callback);
     });
 
     event.once(el, ANIMATIONEND_EVENT, transformEnd);
@@ -227,20 +230,30 @@ exports.frame = function (el, name, options, callback) {
         timeid = setTimeout(transformEnd, options.duration * options.count + options.delay + DELAY_TIME);
     }
 
-    var timingFunction = easing.timingFunction(options.easing);
-    var css = {
-        animationName: name,
-        animationDuration: options.duration + 'ms',
-        animationTimingFunction: timingFunction,
-        animationDelay: options.delay + 'ms',
-        animationIterationCount: options.count,
-        animationDirection: options.direction,
-        //animationPlayState: 'running',
-        animationFillMode: options.fillMode
-    };
+    // 1. 先清空旧的 transform
+    attribute.style(el, {
+        animationName: '',
+        animationDuration: '',
+        animationTimingFunction: '',
+        animationDelay: '',
+        animationIterationCount: '',
+        animationDirection: '',
+        animationPlayState: '',
+        animationFillMode: ''
+    });
 
+    var timingFunction = easing.timingFunction(options.easing);
     time.nextFrame(function () {
-        // 1. 设置帧动画样式
-        attribute.style(el, css);
+        // 2. 设置帧动画样式
+        attribute.style(el, {
+            animationName: name,
+            animationDuration: options.duration + 'ms',
+            animationTimingFunction: timingFunction,
+            animationDelay: options.delay + 'ms',
+            animationIterationCount: options.count,
+            animationDirection: options.direction,
+            animationPlayState: 'running',
+            animationFillMode: options.fillMode
+        });
     });
 };

@@ -9,9 +9,6 @@
 
 
 var TRAVIS = process.env.TRAVIS;
-var COVERAGE = !TRAVIS;
-var SINGLE_RUN = process.argv.indexOf('--single-run') > -1;
-
 
 // http 服务器
 var httpServer = function (req, res, next) {
@@ -20,33 +17,23 @@ var httpServer = function (req, res, next) {
 
 
 module.exports = function (config) {
-    var preprocessors = {};
-    var reporters = ['progress'];
     var browsers = [];
+    var reporters = ['progress', 'coverage'];
     var coverageReporters = [{
         type: 'text-summary'
     }];
 
-    if (COVERAGE) {
-        preprocessors = {
-            // 原始模块，需要测试覆盖率
-            './src/index.js': ['coverage']
-        };
-        reporters.push('coverage');
-    }
-
     if (TRAVIS) {
         browsers = ['Chrome_travis_ci'];
-    } else {
-        browsers = ['Chrome'];
-    }
-
-    if (!SINGLE_RUN) {
+        reporters.push('coveralls');
         coverageReporters.push({
             type: 'lcov',
             dir: './coverage/'
         });
+    } else {
+        browsers = ['Chrome'];
     }
+
 
     config.set({
 
@@ -82,7 +69,7 @@ module.exports = function (config) {
             },
             {
                 // 加载 src 下的原始文件，但不直接引入，使用模块加载器引入
-                pattern: './test/test.**',
+                pattern: './test/**',
                 included: false
             },
             {
@@ -100,7 +87,10 @@ module.exports = function (config) {
 
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-        preprocessors: preprocessors,
+        preprocessors: {
+            // 原始模块，需要测试覆盖率
+            './src/index.js': ['coverage']
+        },
 
 
         // optionally, configure the reporter
