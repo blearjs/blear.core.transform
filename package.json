@@ -1,6 +1,6 @@
 {
   "name": "blear.core.transform",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "DOM CSS3 过渡动画",
   "scripts": {
     "live": "browser-sync start --config bs-config.js",
@@ -35,8 +35,7 @@
   "bugs": {
     "url": "https://github.com/blearjs/blear.core.transform/issues"
   },
-  "dependencies": {},
-  "peerDependencies": {
+  "dependencies": {
     "blear.utils.compatible": "1.x",
     "blear.utils.access": "1.x",
     "blear.utils.typeis": "1.x",
@@ -49,6 +48,7 @@
     "blear.core.event": "1.x",
     "blear.core.attribute": "1.x"
   },
+  "peerDependencies": {},
   "devDependencies": {
     "blear.core.keyframe": "^1.0.1",
     "blear.core.modification": "^1.0.3",
