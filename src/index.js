@@ -104,7 +104,7 @@ exports.transit = function (el, to, options, callback) {
             break;
     }
 
-    callback = fun.noop(callback);
+    callback = fun.ensure(callback);
     options = object.assign({}, defaults, options);
     //object.supply(to, {
     //    transform: {
@@ -198,7 +198,7 @@ exports.frame = function (el, name, options, callback) {
             break;
     }
 
-    callback = fun.noop(callback);
+    callback = fun.ensure(callback);
 
     // fallback
     if (!ANIMATIONEND_EVENT) {
